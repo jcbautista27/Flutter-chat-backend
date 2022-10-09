@@ -1,36 +1,37 @@
 const express = require('express');
-const path = require('path')
+const path = require('path');
 require('dotenv').config();
 
-//bd config
-const {dbConnection} = require('./database/config');
-dbConnection();
+//BD Config
+require('./database/config').dbConnection();
 
-
-//App de express
+// App de Express
 const app = express();
 
-
-//Lectura y parseo del body
+// Lectura y parseo del body
 app.use(express.json());
 
-//node server
+// Node Server
 const server = require('http').createServer(app);
 module.exports.io = require('socket.io')(server);
-require("./sockets/socket");
+require('./sockets/socket');
 
+// Path público
+const publicPath = path.resolve( __dirname, 'public' );
+app.use( express.static( publicPath ) );
 
-//ruta publica
-const publicPath = path.resolve(__dirname, 'public');
-app.use(express.static(publicPath));
-
-//Mis rutas
+// Mis Rutas
 app.use('/api/login', require('./routes/auth'));
+app.use('/api/usuarios', require('./routes/usuarios'));
+app.use('/api/mensajes', require('./routes/mensajes'));
 
 
-server.listen(process.env.PORT, (err) =>{
+server.listen( process.env.PORT, ( err ) => {
 
-    if (err) throw new Error(err);
+    if ( err ) throw new Error(err);
 
-    console.log('servidor online!!', process.env.PORT);
+    console.log('Servidor corriendo en puerto', process.env.PORT );
+
 });
+
+
